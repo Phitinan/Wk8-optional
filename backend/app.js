@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require("express");
 const app = express();
-const propertyRouter = require("./routes/propertyRouter");
+const eventRouter = require("./routes/eventRouter");
 const userRouter = require("./routes/userRouter");
 const { unknownEndpoint,errorHandler } = require("./middleware/customMiddleware");
 const connectDB = require("./config/db");
@@ -13,8 +13,8 @@ app.use(express.json());
 
 connectDB();
  
-// Use the propertyRouter for all "/property" routes
-app.use("/api/properties", propertyRouter);
+// Use the eventRouter for all "/event" routes
+app.use("/api/events", eventRouter);
 
 // Use the userRouter for all "/users" login signup routes
 app.use("/api/users", userRouter);
