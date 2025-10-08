@@ -2,40 +2,32 @@ const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app"); // Express app
 const api = supertest(app);
-const Property = require("../models/propertyModel");
+const Event = require("../models/eventModel");
 const User = require("../models/userModel");
 
 let token = null;
 
-// --- Mock Property Data ---
-const properties = [
+// --- Mock Event Data ---
+const Events = [
   {
-    title: "Cozy Apartment in Helsinki",
-    type: "Apartment",
-    description: "A cozy apartment located in the heart of Helsinki.",
-    price: 1200,
-    location: {
-      address: "Mannerheimintie 10",
-      city: "Helsinki",
-      state: "Uusimaa",
-      zipCode: "00100",
+    title: "AI Conference 2025",
+    date: new Date("2025-12-15"),
+    location: "Helsinki Exhibition Center",
+    organizer: {
+      name: "Tech Finland",
+      contactEmail: "info@techfinland.fi",
+      contactPhone: "+358401234567",
     },
-    squareFeet: 850,
-    yearBuilt: 2010,
   },
   {
-    title: "Modern House in Espoo",
-    type: "House",
-    description: "A spacious house with a beautiful garden.",
-    price: 350000,
-    location: {
-      address: "Länsiväylä 25",
-      city: "Espoo",
-      state: "Uusimaa",
-      zipCode: "02100",
+    title: "Startup Meetup Espoo",
+    date: new Date("2025-11-20"),
+    location: "Otaniemi Innovation Hub, Espoo",
+    organizer: {
+      name: "Espoo Innovators",
+      contactEmail: "contact@espooinnovators.fi",
+      contactPhone: "+358409876543",
     },
-    squareFeet: 2000,
-    yearBuilt: 2015,
   },
 ];
 
@@ -43,99 +35,101 @@ const properties = [
 beforeAll(async () => {
   await User.deleteMany({});
   const result = await api.post("/api/users/signup").send({
+    name: "John Doe",
     email: "john@example.com",
     password: "R3g5T7#gh",
+    gender: "Male",
+    date_of_birth: "1995-06-15",
+    occupation: "Engineer",
+    phone: "+358401112233",
   });
-  token = result.body.token;
+
+  token = result.body.token || null; // in case token is returned by signup route
 });
 
 // --- Test Suite ---
-describe("Protected Property Routes", () => {
+describe("Event Routes", () => {
   beforeEach(async () => {
-    await Property.deleteMany({});
+    await Event.deleteMany({});
     await Promise.all([
-      api.post("/api/properties").set("Authorization", "Bearer " + token).send(properties[0]),
-      api.post("/api/properties").set("Authorization", "Bearer " + token).send(properties[1]),
+      api.post("/api/Events").set("Authorization", "Bearer " + token).send(Events[0]),
+      api.post("/api/Events").set("Authorization", "Bearer " + token).send(Events[1]),
     ]);
   });
 
   // GET all
-  it("should return all properties as JSON when GET /api/properties is called", async () => {
+  it("should return all Events as JSON when GET /api/Events is called", async () => {
     const response = await api
-      .get("/api/properties")
+      .get("/api/Events").set("Authorization", "Bearer " + token)
       .expect(200)
       .expect("Content-Type", /application\/json/);
 
-    expect(response.body).toHaveLength(properties.length);
+    expect(response.body).toHaveLength(Events.length);
   });
 
-
   // POST create
-  it("should create one property when POST /api/properties is called", async () => {
-    const newProperty = {
-      title: "Charming Cottage in Tampere",
-      type: "House",
-      description: "A peaceful countryside cottage with lake view.",
-      price: 180000,
-      location: {
-        address: "Lakeside 12",
-        city: "Tampere",
-        state: "Pirkanmaa",
-        zipCode: "33100",
+  it("should create one event when POST /api/Events is called", async () => {
+    const newEvent = {
+      title: "AI Hackathon Tampere",
+      date: new Date("2025-12-01"),
+      location: "Tampere Tech Arena",
+      organizer: {
+        name: "Tampere Tech Community",
+        contactEmail: "events@tamtech.fi",
+        contactPhone: "+358408888888",
       },
-      squareFeet: 1100,
-      yearBuilt: 2000,
     };
 
     const response = await api
-      .post("/api/properties")
-      .set("Authorization", "Bearer " + token)
-      .send(newProperty)
+      .post("/api/Events").set("Authorization", "Bearer " + token)
+      .send(newEvent)
       .expect(201);
 
-    expect(response.body.title).toBe(newProperty.title);
+    expect(response.body.title).toBe(newEvent.title);
   });
 
   // GET by ID
-  it("should return one property by ID", async () => {
-    const property = await Property.findOne();
+  it("should return one event by ID", async () => {
+    const event = await Event.findOne();
     const response = await api
-      .get(`/api/properties/${property._id}`)
-      .set("Authorization", "Bearer " + token)
+      .get(`/api/Events/${event._id}`).set("Authorization", "Bearer " + token)
       .expect(200)
       .expect("Content-Type", /application\/json/);
 
-    expect(response.body.title).toBe(property.title);
+    expect(response.body.title).toBe(event.title);
   });
 
   // PATCH update
-  it("should update one property by ID", async () => {
-    const property = await Property.findOne();
-    const updatedProperty = { description: "Updated description.", price: 999999 };
+  it("should update one event by ID", async () => {
+    const event = await Event.findOne();
+    const updatedEvent = {
+      location: "Updated Venue, Helsinki",
+      organizer: {
+        name: "Updated Organizer",
+        contactEmail: "updated@organizer.fi",
+        contactPhone: "+358407777777",
+      },
+    };
 
     const response = await api
-      .put(`/api/properties/${property._id}`)
-      .set("Authorization", "Bearer " + token)
-      .send(updatedProperty)
+      .put(`/api/Events/${event._id}`).set("Authorization", "Bearer " + token)
+      .send(updatedEvent)
       .expect(200)
       .expect("Content-Type", /application\/json/);
 
-    expect(response.body.description).toBe(updatedProperty.description);
+    expect(response.body.location).toBe(updatedEvent.location);
 
-    const updatedPropertyCheck = await Property.findById(property._id);
-    expect(updatedPropertyCheck.price).toBe(updatedProperty.price);
+    const updatedEventCheck = await Event.findById(event._id);
+    expect(updatedEventCheck.organizer.name).toBe(updatedEvent.organizer.name);
   });
 
   // DELETE
-  it("should delete one property by ID", async () => {
-    const property = await Property.findOne();
-    await api
-      .delete(`/api/properties/${property._id}`)
-      .set("Authorization", "Bearer " + token)
-      .expect(204);
+  it("should delete one event by ID", async () => {
+    const event = await Event.findOne();
+    await api.delete(`/api/Events/${event._id}`).set("Authorization", "Bearer " + token).expect(204);
 
-    const propertyCheck = await Property.findById(property._id);
-    expect(propertyCheck).toBeNull();
+    const eventCheck = await Event.findById(event._id);
+    expect(eventCheck).toBeNull();
   });
 });
 

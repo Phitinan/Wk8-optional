@@ -7,14 +7,14 @@ const {
   deleteEvent,
 } = require("../controllers/eventControllers");
 
-const { Auth } = require("./middleware/requireAuth");
+const requireAuth = require("../middleware/requireAuth");
 
 const router = express.Router();
 
 router.get("/", getAllEvents);
 router.post("/", createEvent);
 
-router.use(Auth);
+router.use(requireAuth);
 
 router.get("/:eventId", getEventById);
 router.put("/:eventId", updateEvent);

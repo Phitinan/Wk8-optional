@@ -13,8 +13,13 @@ describe("User Routes", () => {
   describe("POST /api/users/signup", () => {
     it("should signup a new user with valid credentials", async () => {
       const userData = {
-        email: "valid@example.com",
+        name: "John Doe",
+        email: "john@example.com",
         password: "R3g5T7#gh",
+        gender: "Male",
+        date_of_birth: "1995-06-15",
+        occupation: "Engineer",
+        phone: "358401112233"
       };
 
       const result = await api.post("/api/users/signup").send(userData);
@@ -44,14 +49,18 @@ describe("User Routes", () => {
     it("should login a user with valid credentials", async () => {
       // First signup
       await api.post("/api/users/signup").send({
-        email: "login@example.com",
+        name: "John Doe",
+        email: "john@example.com",
         password: "R3g5T7#gh",
-        
+        gender: "Male",
+        date_of_birth: "1995-06-15",
+        occupation: "Engineer",
+        phone: "358401112233"        
       });
 
       // Then login
       const result = await api.post("/api/users/login").send({
-        email: "login@example.com",
+        email: "john@example.com",
         password: "R3g5T7#gh",
       });
 
@@ -61,7 +70,7 @@ describe("User Routes", () => {
 
     it("should return an error with wrong password", async () => {
       const result = await api.post("/api/users/login").send({
-        email: "login@example.com",
+        email: "john@example.com",
         password: "wrongpassword",
       });
 
