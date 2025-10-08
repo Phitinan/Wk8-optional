@@ -1,6 +1,6 @@
 const express = require("express");
 const {
-  getAllEvents,
+  getAllProperties,
   getEventById,
   createEvent,
   updateEvent,
@@ -9,7 +9,7 @@ const {
 
 const router = express.Router();
 
-router.get("/", getAllEvents);
+router.get("/", getAllE);
 router.post("/", createEvent);
 router.get("/:eventId", getEventById);
 router.put("/:eventId", updateEvent);
