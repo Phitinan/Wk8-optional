@@ -3,11 +3,11 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
 // Generate JWT
-const generateToken = (_id) => {
+/* const generateToken = (_id) => {
   return jwt.sign({ _id }, process.env.SECRET, {
     expiresIn: "3d",
   });
-};
+}; */
 
 
 const signupUser = async (req, res) => {
@@ -25,8 +25,8 @@ const signupUser = async (req, res) => {
     }
 
      // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+   /*  const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt); */
  
     // Create user
     const user = await User.create({
@@ -51,7 +51,6 @@ const signupUser = async (req, res) => {
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
   try {
-    // Check for user email
     const user = await User.findOne({ email });
 
     if (user && (await bcrypt.compare(password, user.password))) {
