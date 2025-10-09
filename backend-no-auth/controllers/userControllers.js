@@ -30,14 +30,13 @@ const signupUser = async (req, res) => {
  
     // Create user
     const user = await User.create({
-      email,
-      hashedPassword      
+      ...req.body  
     });
 
     if (user) {
       // console.log(user._id);
-     const token = generateToken(user._id);
-      res.status(201).json({ email,token});
+     //const token = generateToken(user._id);
+      res.status(201).json({ email});
     } else {
       res.status(400);
       throw new Error("Invalid user data");
@@ -53,9 +52,8 @@ const loginUser = async (req, res) => {
   try {
     const user = await User.findOne({ email });
 
-    if (user && (await bcrypt.compare(password, user.password))) {
-      const token = generateToken(user._id);
-      res.status(200).json({ email, token });
+    if (user && user.password==password) {
+      res.status(200).json({ email });
     } else {
       res.status(400);
       throw new Error("Invalid credentials");

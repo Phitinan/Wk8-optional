@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function useSignup(url) {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(null);
+  const navigate = useNavigate();
 
   const signup = async (object) => {
     console.log(object)

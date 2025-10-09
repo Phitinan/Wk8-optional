@@ -3,10 +3,10 @@ import { useState } from "react";
 
 // pages & components
 import Home from "./pages/HomePage";
-import AddPropertyPage from "./pages/AddPropertyPage";
+import AddEventPage from "./pages/AddEvevntPage";
 import Navbar from "./components/Navbar";
 import NotFoundPage from "./pages/NotFoundPage";
-import PropertyPage from "./pages/PropertyPage";
+import EventPage from "./pages/EventPage";
 import EditPage from "./pages/EditPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -25,8 +25,8 @@ const App = () => {
         <div className="content">
           <Routes>
             <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/signup"  />} />
-            <Route path="/add-property" element={isAuthenticated ? <AddPropertyPage /> : <Navigate to="/signup" />} />
-            <Route path="/properties/:id" element={<PropertyPage isAuthenticated={isAuthenticated} />} />
+            <Route path="/add-events" element={isAuthenticated ? <AddEventPage /> : <Navigate to="/signup" />} />
+            <Route path="/events/:id" element={<EventPage isAuthenticated={isAuthenticated} />} />
             <Route path="/edit/:id" element={isAuthenticated ? <EditPage  /> : <Navigate to="/signup" />} />
             <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login setIsAuthenticated={setIsAuthenticated} />} />
             <Route path="/signup" element={isAuthenticated ? <Navigate to="/" /> : <Signup setIsAuthenticated={setIsAuthenticated} />} />

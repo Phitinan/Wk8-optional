@@ -7,5 +7,5 @@ export default function useField(type) {
     setValue(e.target.value);
   };
 
-  return { type, value, onChange };
+  return { type, value, onChange, setValue };
 };

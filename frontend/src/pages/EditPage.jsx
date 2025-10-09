@@ -1,39 +1,33 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-
+import useField from "../hooks/useField";
 
 const EditPropertyPage = () => {
-    const [title, setTitle] = useState("")
-    const [type, setType] = useState("")
-    const [description, setDescription] = useState("")
-    const [price, setPrice] = useState("")
-    const [address, setAddress] = useState("")
-    const [city, setCity] = useState("")
-    const [state, setState] = useState("")
-    const [zipCode, setZipCode] = useState("")
-    const [squareFeet, setSquareFeet] = useState("")
-    const [yearBuilt, setYearBuilt] = useState("")
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const {id} = useParams();
+    const title = useField("title");
+    const date = useField("date");
+    const location = useField("location");
+    const name = useField("name");
+    const contactEmail = useField("contactEmail");
+    const contactPhone = useField("contactPhone");
+    const { id } = useParams();
 
     const user = JSON.parse(localStorage.getItem("user"))
     const token = user ? user.token : null;
     console.log(token)
 
     const navigate = useNavigate();
-    
-    const editProperty = async (newProperty) => {
-        
+
+    const editEvent = async (newEvent) => {
+
         try {
-            console.log(newProperty)
-            const res = await fetch(`/api/properties/${id}`, {
+            console.log(newEvent)
+            const res = await fetch(`/api/events/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/JSON",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(newProperty),
+                body: JSON.stringify(newEvent),
             });
             if (!res.ok) {
                 throw new Error("Failed to edit property")
@@ -48,131 +42,92 @@ const EditPropertyPage = () => {
     const submitForm = async (e) => {
         e.preventDefault();
 
-        const newProperty = {
-            title,
-            type,
-            description,
-            price,
-            location: {
-                address,
-                city,
-                state,
-                zipCode,
-            },
-            squareFeet,
-            yearBuilt
+        const newEvent = {
+            title: title.value,
+            date: date.value,
+            location: location.value,
+
+            organizer: {
+                name: name.value,
+                contactEmail: contactEmail.value,
+                contactPhone: contactPhone.value,
+            }
         };
 
-        const success = await editProperty(newProperty);
+        const success = await editEvent(newEvent);
         if (success) {
-            console.log("Property edited successfully");
+            console.log("event edited successfully");
             navigate("/");
         } else {
-            console.error("Failed to edit property");
+            console.error("Failed to edit event");
         }
     };
 
     useEffect(() => {
-        const fetchProperty = async () => {
+        const fetchEvent = async () => {
             try {
                 console.log("id: ", id);
-                const res = await fetch(`/api/properties/${id}`);
+                const res = await fetch(`/api/events/${id}`);
                 if (!res.ok) {
                     throw new Error("Network response was not ok");
                 }
                 const data = await res.json();
-                setTitle(data.title);
-                setType(data.type);
-                setDescription(data.description);
-                setPrice(data.price);
-                setAddress(data.location.address);
-                setCity(data.location.city);
-                setState(data.location.state);
-                setZipCode(data.location.zipCode);
-                setSquareFeet(data.squareFeet);
-                setYearBuilt(data.yearBuilt);
+                title.setValue(data.title || "");
+                date.setValue(data.date ? data.date.split("T")[0] : ""); // handle ISO date
+                location.setValue(data.location || "");
+                name.setValue(data.organizer?.name || "");
+                contactEmail.setValue(data.organizer?.contactEmail || "");
+                contactPhone.setValue(data.organizer?.contactPhone || "");
 
             } catch (err) {
                 setError(err.message);
             } finally {
-                setLoading(false);
+                /* setLoading(false); */
             }
         };
 
-        fetchProperty();
+        fetchEvent();
     }, [id]);
 
     return (
         <div className="create">
             <h2>Edit Property</h2>
             <form onSubmit={submitForm}>
-                <label>Property title:</label>
+                <label>Event title:</label>
                 <input
                     type="text"
                     required
-                    value={title}
-                    onChange={(e) => { setTitle(e.target.value) }}
+                    {...title}
                 />
-                <label>Property type:</label>
-                <select value={type}
-                    onChange={(e) => { setType(e.target.value) }}>
-                    <option value="Apartment">Apartment</option>
-                    <option value="House">House</option>
-                    <option value="Commercial">Commercial</option>
-                </select>
+                <label>event date:</label>
+                <input
+                    type="date"
+                    required
+                    {...date}
+                />
 
-                <label>Property Description:</label>
+                <label>location:</label>
                 <textarea
                     required
-                    value={description}
-                    onChange={(e) => { setDescription(e.target.value) }}
+                    {...location}
 
                 ></textarea>
-                <label>Price:</label>
+                <label>Organiszer name</label>
                 <input
                     type="text"
                     required
-                    value={price}
-                    onChange={(e) => { setPrice(e.target.value) }}
+                    {...name}
                 />
-                <label>Address:</label>
+                <label>Organiszer email:</label>
                 <input
                     type="text"
                     required
-                    value={address}
-                    onChange={(e) => { setAddress(e.target.value) }}
-                /><label>City:</label>
+                    {...contactEmail}
+                /><label>Organiszer phone:</label>
                 <input
                     type="text"
                     required
-                    value={city}
-                    onChange={(e) => { setCity(e.target.value) }}
-                /><label>State:</label>
-                <input
-                    type="text"
-                    required
-                    value={state}
-                    onChange={(e) => { setState(e.target.value) }}
-                /><label>Zipcode:</label>
-                <input
-                    type="text"
-                    required
-                    value={zipCode}
-                    onChange={(e) => {setZipCode(e.target.value)}}
-                />
-                <label>Square Feet:</label>
-                <input
-                    type="number"
-                    required
-                    value={squareFeet}
-                    onChange={(e) => {setSquareFeet(e.target.value)}}
-                />
-                <label>Year Built</label>
-                <input
-                    type="number"
-                    required
-                    value={yearBuilt}
-                    onChange={(e) => {setYearBuilt(e.target.value)}}
+                    {...contactPhone}
                 />
                 <button type="submit">Submit</button>
             </form>

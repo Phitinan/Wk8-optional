@@ -1,32 +1,32 @@
-import PropertyListings from "../components/PropertyListings";
+import EventListings from "../components/EventListings";
 import { useState, useEffect } from "react";
 
 
 const Home = () => {
-  const [properties, setProperties] = useState(null);
+  const [events, setEvents] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // useEffect(() => {},[]);
 
   useEffect(() => {
-    const fetchProperties = async () => {
+    const fetchEvents = async () => {
       try {
 
-        const res = await fetch("/api/properties");
+        const res = await fetch("/api/events");
         if (!res.ok) {
-          throw new Error("Failed to get property")
+          throw new Error("Failed to get event")
         }
         const data = await res.json();
         setIsLoading(false);
-        setProperties(data)
+        setEvents(data)
         setError(null)
       } catch (error) {
         setIsLoading(false);
         setError(error.message);
       }
     }
-    fetchProperties()
+    fetchEvents()
   }, []);
 
 
@@ -34,7 +34,7 @@ const Home = () => {
     <div className="home">
       {error && <div>{error}</div>}
       {isLoading && <div>Loading...</div>}
-      {properties && <PropertyListings properties={properties} />}
+      {events && <EventListings events={events} />}
     </div>
   );
 };

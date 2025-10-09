@@ -12,11 +12,12 @@ const requireAuth = require("../middleware/requireAuth");
 const router = express.Router();
 
 router.get("/", getAllEvents);
-router.post("/", createEvent);
+router.get("/:eventId", getEventById);
+
 
 router.use(requireAuth);
 
-router.get("/:eventId", getEventById);
+router.post("/", createEvent);
 router.put("/:eventId", updateEvent);
 router.delete("/:eventId", deleteEvent);
 
