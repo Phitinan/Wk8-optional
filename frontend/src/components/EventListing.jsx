@@ -7,9 +7,9 @@ const EventListing = ({event})=> {
       <p>{event.date}</p>
       <p>Description: {event.location}</p>
       <h3>organizer: </h3>
-      <p> Address: {event.organizer.name}</p>
-      <p> City: {event.organizer.contactEmail}</p>
-      <p> State: {event.organizer.contactPhone}</p>
+      <p> name: {event.organizer.name}</p>
+      <p> contactEmail: {event.organizer.contactEmail}</p>
+      <p> contactPhone: {event.organizer.contactPhone}</p>
       
     </div>
   );

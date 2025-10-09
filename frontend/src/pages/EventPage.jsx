@@ -76,15 +76,12 @@ const EventPage = () => {
         <>
 
           <h2>{event.title}</h2>
-          <p>{event.type}</p>
-          <p>Description: {event.description}</p>
-          <h3>Location: </h3>
-          <p> Address: {event.location.address}</p>
-          <p> City: {event.location.city}</p>
-          <p> State: {event.location.state}</p>
-          <p> ZipCode: {event.location.zipCode}</p>
-          <p>Sq feet{event.squareFeet}</p>
-          <p>Year: {event.yearBuilt}</p>
+          <p>{event.date.split("T")[0]}</p>
+          <p>Description: {event.location}</p>
+          <h3>organizer: </h3>
+          <p> name: {event.organizer.name}</p>
+          <p> contactEmail: {event.organizer.contactEmail}</p>
+          <p> contactPhone: {event.organizer.contactPhone}</p>
 
           <button onClick={() => onDeleteClick(event._id)}>delete</button>
           <button onClick={() => onEditClick(event._id)}>edit</button>
